@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>내 화장품 D-Day</title>
+<title>화장품 D-day</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Gaegu:wght@400;700&family=Jua&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -324,7 +324,7 @@
 <div class="wrap">
   <header>
     <div class="header-inner">
-      <h1>내 화장품<span> D-Day</span></h1>
+      <h1>화장품<span> D-day</span></h1>
       <button class="link-btn" id="copyLinkBtn">🔗 내 링크 복사</button>
     </div>
   </header>
@@ -472,8 +472,8 @@ const CURRENT_USER_ID = getOrCreateUserId();
    두 값을 채우면 자동으로 실제 DB 모드로 동작하고,
    비워두면(그대로 두면) 지금처럼 데모 데이터로 동작해요.
    --------------------------------------------------------- */
-const SUPABASE_URL = "https://vgpmcvmhrogbemwmlbik.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_r52gwyTSybjLd2TVlW9hGQ_7t-RQMtN";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 const SUPABASE_CONFIGURED = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 const supabaseClient = SUPABASE_CONFIGURED
@@ -501,13 +501,13 @@ function fmtInputRaw(d){
 
 // 데모 모드 전용 예시 데이터 (Supabase 미설정 시에만 사용됨)
 const DEMO_PRODUCTS = [
-  {id:1, name:"글로우레시피 워터멜론 크림", category:"에센스/크림", opened:true,
+  {id:"1", name:"글로우레시피 워터멜론 크림", category:"에센스/크림", opened:true,
    openDate:openDateForTargetDday(250, 12), pao:12, boxDate:null, memo:""},
-  {id:2, name:"롬앤 립스틱 A", category:"립스틱", opened:true,
+  {id:"2", name:"롬앤 립스틱 A", category:"립스틱", opened:true,
    openDate:openDateForTargetDday(-35, 12), pao:12, boxDate:null, memo:""},
-  {id:3, name:"세일 때 산 선크림", category:"선크림", opened:false,
+  {id:"3", name:"세일 때 산 선크림", category:"선크림", opened:false,
    openDate:null, pao:6, boxDate:"2028-01-01", memo:"세일 대량구매"},
-  {id:4, name:"메이블린 마스카라", category:"마스카라/아이라이너", opened:true,
+  {id:"4", name:"메이블린 마스카라", category:"마스카라/아이라이너", opened:true,
    openDate:openDateForTargetDday(17, 6), pao:6, boxDate:null, memo:""}
 ];
 
@@ -610,7 +610,7 @@ async function loadProducts(){
 
 async function insertProduct(p){
   if(!SUPABASE_CONFIGURED){
-    p.id = nextId++;
+    p.id = String(nextId++);
     products.push(p);
     render();
     return;
@@ -731,13 +731,13 @@ function render(){
   });
 
   list.querySelectorAll("[data-open]").forEach(btn=>{
-    btn.addEventListener("click", ()=>openEditSheet(Number(btn.dataset.open)));
+    btn.addEventListener("click", ()=>openEditSheet(btn.dataset.open));
   });
   list.querySelectorAll("[data-edit]").forEach(btn=>{
-    btn.addEventListener("click", ()=>openEditProductSheet(Number(btn.dataset.edit)));
+    btn.addEventListener("click", ()=>openEditProductSheet(btn.dataset.edit));
   });
   list.querySelectorAll("[data-delete]").forEach(btn=>{
-    btn.addEventListener("click", ()=>deleteProduct(Number(btn.dataset.delete)));
+    btn.addEventListener("click", ()=>deleteProduct(btn.dataset.delete));
   });
 }
 
