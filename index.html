@@ -381,6 +381,7 @@
 
     <div class="field" id="f-opendate-field">
       <label>개봉일 <span class="required">*</span></label>
+      <div class="hint" style="display:block; margin:0 0 6px;">미래 날짜로 설정 불가</div>
       <input type="date" id="f-opendate">
     </div>
 
@@ -427,7 +428,7 @@
       <div id="open-name" style="font-weight:700; padding:4px 0 8px;"></div>
     </div>
     <div class="field">
-      <label>개봉일 <span class="required">*</span> <span class="hint">기본값: 오늘 날짜</span></label>
+      <label>개봉일 <span class="required">*</span> <span class="hint">기본값: 오늘 날짜 · 미래 날짜로 설정 불가</span></label>
       <input type="date" id="open-date">
     </div>
     <div class="calc-box">
@@ -836,6 +837,7 @@ function resetAddForm(editProduct){
   editTargetId = editProduct ? editProduct.id : null;
   $("#addSheetTitle").textContent = editProduct ? "제품 수정" : "제품 등록";
   $("#submitAddBtn").textContent = editProduct ? "수정 완료" : "제품 등록하기";
+  $("#f-opendate").max = fmtInput(new Date()); // 개봉일은 미래 날짜 선택 불가(이미 개봉함 = 과거~오늘)
 
   $("#f-name").value = editProduct ? editProduct.name : "";
 
@@ -909,6 +911,7 @@ $("#submitAddBtn").addEventListener("click", async ()=>{
   if(openedState === "yes"){
     openDate = $("#f-opendate").value;
     if(!openDate){ showToast("개봉일을 입력해주세요"); return; }
+    if(openDate > fmtInput(new Date())){ showToast("개봉일은 미래 날짜로 설정할 수 없어요"); return; }
   }
 
   const fields = {name, category, opened: openedState==="yes", openDate, pao, boxDate, memo};
@@ -932,6 +935,7 @@ function openEditSheet(id){
   if(!p) return;
   openTargetId = id;
   $("#open-name").textContent = p.name;
+  $("#open-date").max = fmtInput(new Date());
   $("#open-date").value = fmtInput(new Date());
   updateOpenCalcPreview(p);
   openOverlay.classList.add("show");
@@ -951,6 +955,7 @@ $("#saveOpenBtn").addEventListener("click", async ()=>{
   if(!p) return;
   const openDate = $("#open-date").value;
   if(!openDate){ showToast("개봉일을 입력해주세요"); return; }
+  if(openDate > fmtInput(new Date())){ showToast("개봉일은 미래 날짜로 설정할 수 없어요"); return; }
   openOverlay.classList.remove("show");
   showToast("저장 중...");
   await updateProductRemote(openTargetId, {...p, opened:true, openDate});
