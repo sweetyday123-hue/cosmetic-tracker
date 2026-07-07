@@ -337,7 +337,7 @@
   <header>
     <div class="header-inner">
       <h1>화장품<span> D-day</span></h1>
-      <button class="link-btn" id="copyLinkBtn">🔗 내 링크 복사</button>
+      <button class="link-btn" id="copyLinkBtn">🔗 내 링크</button>
     </div>
   </header>
 
@@ -452,6 +452,19 @@
 </div>
 
 <!-- PAO 안내 팝업 (페이지 진입 시 자동 노출) -->
+<!-- 내 링크 공유 선택 팝업 -->
+<div class="overlay" id="shareOverlay">
+  <div class="sheet">
+    <h2>🔗 내 링크</h2>
+    <p style="margin-bottom:18px;">이 링크로 다시 접속하면 내가 등록한 목록을 그대로 볼 수 있어요.</p>
+    <div class="btn-row" style="flex-direction:column; gap:10px;">
+      <button class="btn-primary" id="shareCopyBtn" style="width:100%; padding:13px; border-radius:9px; font-family:'Manrope', sans-serif; font-weight:700; font-size:14px; cursor:pointer;">📋 복사하기</button>
+      <button class="btn-cancel" id="shareKakaoBtn" style="width:100%; padding:13px; border-radius:9px; font-family:'Manrope', sans-serif; font-weight:700; font-size:14px; cursor:pointer; border:1px solid var(--line);">💬 카카오톡으로 보내기</button>
+    </div>
+    <button class="btn-cancel" id="shareCancelBtn" style="width:100%; padding:13px; border-radius:9px; margin-top:10px; border:none; font-family:'Manrope', sans-serif; font-weight:600; font-size:13px; color:var(--ink-soft); cursor:pointer;">취소</button>
+  </div>
+</div>
+
 <div class="overlay" id="paoInfoOverlay">
   <div class="sheet">
     <h2>📌 PAO(개봉 후 사용기한)란?</h2>
@@ -981,14 +994,36 @@ $("#saveOpenBtn").addEventListener("click", async ()=>{
   showToast("개봉일이 저장됐어요");
 });
 
-// ---- 링크 복사 / 토스트 ----
+// ---- 내 링크 공유 선택 팝업 ----
+const shareOverlay = $("#shareOverlay");
 $("#copyLinkBtn").addEventListener("click", ()=>{
+  shareOverlay.classList.add("show");
+});
+$("#shareCancelBtn").addEventListener("click", ()=>{
+  shareOverlay.classList.remove("show");
+});
+$("#shareCopyBtn").addEventListener("click", ()=>{
   navigator.clipboard?.writeText(window.location.href).catch(()=>{});
+  shareOverlay.classList.remove("show");
   const msg = SUPABASE_CONFIGURED
     ? "링크가 복사됐어요! 이 링크로 접속하면 언제든 내 목록을 볼 수 있어요"
     : "링크가 복사됐어요 (지금은 데모 모드 — Supabase 키를 넣으면 실제로 저장돼요)";
   showToast(msg);
 });
+$("#shareKakaoBtn").addEventListener("click", async ()=>{
+  shareOverlay.classList.remove("show");
+  if(navigator.share){
+    try{
+      await navigator.share({ title:"화장품 D-day", text:"내 화장품 사용기한 확인해보세요!", url: window.location.href });
+    }catch(e){
+      // 사용자가 공유를 취소한 경우 등 — 별도 처리 없이 종료
+    }
+  } else {
+    navigator.clipboard?.writeText(window.location.href).catch(()=>{});
+    showToast("이 브라우저는 공유 기능을 지원하지 않아 링크가 복사됐어요. 카카오톡에 붙여넣어 주세요!");
+  }
+});
+
 let toastTimer;
 function showToast(msg){
   const t = $("#toast");
